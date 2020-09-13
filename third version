@@ -1,0 +1,341 @@
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <time.h>
+//#include <iostream>
+#include<bits/stdc++.h>
+using namespace std;
+typedef struct card{
+    int Order;        // 顺序
+    char Suit;        // 花色
+    char Number;    // 牌面大小
+    int Zhi;//真正大小 J:11 Q:12 K:13 A:14 打几:15 g:20 G:21
+}Card;
+ 
+// card arr
+Card OneCard[108] = {};
+ 
+// 打印所有
+void showCard(){
+	int i;
+	
+	for(i=0; i<108; i++){
+		//printf("  %02d,%c,%c", OneCard[i].Order, OneCard[i].Suit, OneCard[i].Number);
+		if(OneCard[i].Number=='@'){
+			cout<<"  "<<OneCard[i].Suit<<","<<setw(3)<<10;
+		}
+		else
+			cout<<"  "<<OneCard[i].Suit<<","<<setw(3)<<OneCard[i].Number<<"/"<<OneCard[i].Zhi;
+		if(12 == i%13){
+			printf("\n");
+		}
+	}	
+	printf("\n");
+}
+ 
+// 随机乱序
+void shuffle(){
+	int i;
+ 
+	Card tmpCard;
+ 
+	srand(time(NULL));
+	for(i=0; i<108; i++){
+		int tmp = rand()%108;
+//		tmpCard = OneCard[tmp];
+//		OneCard[tmp] = OneCard[i];
+//		OneCard[i] = tmpCard;
+				tmpCard.Order=OneCard[tmp].Order;
+				tmpCard.Suit=OneCard[tmp].Suit;
+				tmpCard.Number=OneCard[tmp].Number;
+				tmpCard.Zhi=OneCard[tmp].Zhi;
+				OneCard[tmp].Order=OneCard[i].Order;
+				OneCard[tmp].Suit=OneCard[i].Suit;
+				OneCard[tmp].Number=OneCard[i].Number;
+				OneCard[tmp].Zhi=OneCard[i].Zhi;
+				OneCard[i].Order=tmpCard.Order;
+				OneCard[i].Suit=tmpCard.Suit;
+				OneCard[i].Number=tmpCard.Number;
+				OneCard[i].Zhi=tmpCard.Zhi;
+	}
+ 
+//	showCard();
+	return;
+}
+ 
+// 初始化，顺序
+void initCard(){
+	int i;
+	
+	for(i=0; i<108; i++){
+		OneCard[i].Order = i;
+ 
+		if(i>=104){
+			if(i==104||i==105){
+				OneCard[i].Suit = 'g';
+				OneCard[i].Number = 'g';
+				OneCard[i].Zhi=20; 
+			}else{
+				OneCard[i].Suit = 'G';
+				OneCard[i].Number = 'G';
+				OneCard[i].Zhi=21;
+			}
+		}else{
+			if(i<=25){
+				OneCard[i].Suit = 'H';	// heart红桃 
+			}else if(i<=51){
+				OneCard[i].Suit = 'S';	// spade黑桃 
+			}else if(i<=77){
+				OneCard[i].Suit = 'D';	// diamond方块 
+			}else{ 
+				OneCard[i].Suit = 'C';	// club梅花 
+			}
+ 
+			switch(i%13){
+				case 0:
+					OneCard[i].Number = 'A';
+					OneCard[i].Zhi=14;
+					break;
+				case 9:
+					OneCard[i].Number = '@';
+					OneCard[i].Zhi=10;
+					break;
+				case 10:
+					OneCard[i].Number = 'J';
+					OneCard[i].Zhi=11;
+					break;			
+				case 11:
+					OneCard[i].Number = 'Q';
+					OneCard[i].Zhi=12;
+					break;
+				case 12:
+					OneCard[i].Number = 'K';
+					OneCard[i].Zhi=13;
+					break;			
+				default:
+					OneCard[i].Number = (i%13)+'1';
+					OneCard[i].Zhi=i%13+1;
+			}
+		}		
+	}
+ 
+//	showCard();
+	return;
+}
+void paixu(Card X[],int n){
+//	int n=0;
+//	for(int i=0;i<27;i++){
+//		if(X[i].Order!='\0')++n;
+//	}
+	for(int i=0;i<n-1;i++){
+		for(int j=i+1;j<n;j++){
+//			if(X[i].Number=='')
+			if(X[i].Zhi==X[j].Zhi){
+				if(X[i].Suit>X[j].Suit){
+				Card tmp;	//花色排序，C<D<H<S
+				tmp.Order=X[i].Order;
+				tmp.Suit=X[i].Suit;
+				tmp.Number=X[i].Number;
+				tmp.Zhi=X[i].Zhi;
+				X[i].Order=X[j].Order;
+				X[i].Suit=X[j].Suit;
+				X[i].Number=X[j].Number;
+				X[i].Zhi=X[j].Zhi;
+				X[j].Order=tmp.Order;
+				X[j].Suit=tmp.Suit;
+				X[j].Number=tmp.Number;
+				X[j].Zhi=tmp.Zhi;
+				} 
+			} 
+			if(X[i].Zhi>X[j].Zhi){
+				Card tmp;//大小排序 
+				tmp.Order=X[i].Order;
+				tmp.Suit=X[i].Suit;
+				tmp.Number=X[i].Number;
+				tmp.Zhi=X[i].Zhi;
+				X[i].Order=X[j].Order;
+				X[i].Suit=X[j].Suit;
+				X[i].Number=X[j].Number;
+				X[i].Zhi=X[j].Zhi;
+				X[j].Order=tmp.Order;
+				X[j].Suit=tmp.Suit;
+				X[j].Number=tmp.Number;
+				X[j].Zhi=tmp.Zhi;
+		}
+		}
+	}
+}
+void printyifu(Card a[],int n){
+//	int n=0;
+//	for(int i=0;i<27;i++){
+//		if(a[i].Order!='\0')++n;
+//	}
+	for(int i=0,j=-1; i<n; i++){
+		if(a[i].Order==-1)continue;
+		if(a[i].Number=='@'){
+			j++;
+			cout<<"  "<<a[i].Suit<<","<<setw(3)<<10;
+		}
+		else{
+			j++;
+			cout<<"  "<<a[i].Suit<<","<<setw(3)<<a[i].Number;
+//			cout<<"/"<<a[i].Zhi;
+		}
+			
+		if(12 == j%13){
+			printf("\n");
+		}
+	}
+	cout<<endl;
+}
+void Shuru(Card shuru[]){
+//	Card shuru[27]={};//输入所出的牌 
+	cout<<"请输入所出的牌(用空格隔开,b停止):"<<endl;
+	int count=0;
+	while(cin>>shuru[count].Suit){
+		string tmp;
+		tmp[0]=shuru[count].Suit;
+		shuru[count].Order=count;
+		if(tmp[0]=='b')break;
+		cin>>tmp;		
+		if(tmp[0]>='0'&&tmp[0]<='9'){
+		if(tmp[1]=='0'&&tmp[0]=='1'){
+			shuru[count].Number='@';
+			shuru[count].Zhi=10;
+		}
+		
+		else {
+			shuru[count].Number=tmp[0];
+			shuru[count].Zhi=tmp[0]-'0';
+		}
+		}
+		if(tmp[0]=='J'){
+		shuru[count].Number=tmp[0];
+		shuru[count].Zhi=11;
+		}
+		else if(tmp[0]=='Q'){
+		shuru[count].Number=tmp[0];
+		shuru[count].Zhi=12;
+		}
+		else if(tmp[0]=='K'){
+		shuru[count].Number=tmp[0];
+		shuru[count].Zhi=13;
+		}
+		else if(tmp[0]=='A'){
+		shuru[count].Number=tmp[0];
+		shuru[count].Zhi=14;
+		}
+		else if(tmp[0]=='g'){
+		shuru[count].Number=tmp[0];
+		shuru[count].Zhi=20;
+		}
+		else if(tmp[0]=='G'){
+		shuru[count].Number=tmp[0];
+		shuru[count].Zhi=21;
+		}
+		shuru[count].Order=count;
+//		cout<<shuru[count].Suit<<","<<shuru[count].Number<<endl;
+//		cout<<"count:"<<count<<endl;
+		if(count<26)++count;
+		else {++count;
+			break;
+		}
+	}
+//	cout<<"count:"<<count<<endl;
+	shuru[0].Order=count;
+	cout<<"排序并打印所输入的牌："<<endl;
+	paixu(shuru,count);
+	printyifu(shuru,count);	
+}
+void chupai(Card A[],char a){
+	cout<<a<<"出牌"<<endl;
+	Card shuru[27]={};//出牌 
+	Shuru(shuru);
+//	cout<<shuru[0].Order;
+	cout<<a<<"出牌后"<<endl;
+	for(int j=0;j<shuru[0].Order;j++){
+		for(int i=0;i<27;i++){
+			if(A[i].Suit==shuru[j].Suit&&A[i].Number==shuru[j].Number||A[i].Order!=-1){
+				A[i].Order=-1;
+				break;
+			}
+		}
+	}
+//	paixu(A,27);
+	printyifu(A,27);
+}
+int main(void){
+//	printf("init card:\n");
+	initCard();
+//	printf("\nafter shuffle1 cards: \n");
+	shuffle();
+	Card A[27]={};
+	Card B[27]={};
+	Card C[27]={};
+	Card D[27]={};
+	for(int i=0;i<27;i++){
+		A[i].Order=OneCard[i].Order;
+		A[i].Suit=OneCard[i].Suit;
+		A[i].Number=OneCard[i].Number;
+		A[i].Zhi=OneCard[i].Zhi;
+	}
+	for(int i=27;i<54;i++){
+		B[i-27].Order=OneCard[i].Order;
+		B[i-27].Suit=OneCard[i].Suit;
+		B[i-27].Number=OneCard[i].Number;
+		B[i-27].Zhi=OneCard[i].Zhi;
+	}
+	for(int i=54;i<81;i++){
+		C[i-54].Order=OneCard[i].Order;
+		C[i-54].Suit=OneCard[i].Suit;
+		C[i-54].Number=OneCard[i].Number;
+		C[i-54].Zhi=OneCard[i].Zhi;
+	}
+	for(int i=81;i<108;i++){
+		D[i-81].Order=OneCard[i].Order;
+		D[i-81].Suit=OneCard[i].Suit;
+		D[i-81].Number=OneCard[i].Number;
+		D[i-81].Zhi=OneCard[i].Zhi;
+	}
+//	cout<<"A:"<<endl;
+//	printyifu(A);
+	cout<<"A排序后:"<<endl;
+	paixu(A,27);
+	printyifu(A,27);
+	cout<<"B排序后:"<<endl;
+	paixu(B,27);
+	printyifu(B,27);
+	cout<<"C排序后:"<<endl;
+	paixu(C,27);
+	printyifu(C,27);
+	cout<<"D排序后:"<<endl;
+	paixu(D,27);
+	printyifu(D,27);
+	//从A开始
+/*	cout<<"A出牌"<<endl;
+	Card shuru[27]={};//出牌 
+	Shuru(shuru);
+	cout<<shuru[0].Order;
+	cout<<"A出牌后"<<endl;
+	for(int j=0;j<shuru[0].Order;j++){
+		for(int i=0;i<27;i++){
+			if(A[i].Suit==shuru[j].Suit&&A[i].Number==shuru[j].Number||A[i].Order!=-1){
+				A[i].Order=-1;
+				break;
+			}
+		}
+	}
+	paixu(A,27);
+	printyifu(A,27);
+	*/
+	while(1){
+	chupai(A,'A');
+	chupai(B,'B');
+	chupai(C,'C');
+	chupai(D,'D');
+	}
+	
+	
+	
+	
+	return 0;
+}
